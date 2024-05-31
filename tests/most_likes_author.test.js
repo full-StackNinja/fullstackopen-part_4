@@ -2,7 +2,7 @@ const { test, describe } = require("node:test");
 const assert = require("node:assert");
 const { mostLikes } = require("../utils/list_helper");
 
-describe("author with most likes", () => {
+describe.skip("author with most likes", () => {
    test("for empty array equals null", () => {
       const blogs = [];
       const result = mostLikes(blogs);

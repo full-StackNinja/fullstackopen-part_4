@@ -21,6 +21,9 @@ const errorMiddleware = (err, req, res, next) => {
    if (err.name === "ValidationError") {
       return res.status(400).json({ error: err.message });
    }
+   if (err.message.includes("duplicate key error")) {
+      return res.status(400).json({ error: "username must be unique" });
+   }
    //    if error is other than above mentioned then move to next error middleware
    next(err);
 };
