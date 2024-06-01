@@ -2,7 +2,7 @@ const { totalLikes } = require("../utils/list_helper");
 const { test, describe } = require("node:test");
 const assert = require("node:assert");
 
-describe.skip("total likes", () => {
+describe("total likes", () => {
    test("of empty list is zero", () => {
       const emptyBlogList = [];
       const result = totalLikes(emptyBlogList);

@@ -3,8 +3,14 @@ const userRouter = require("express").Router();
 const bcrypt = require("bcrypt");
 
 userRouter.get("/", async (req, res) => {
-   const allUsers = await User.find({});
-   res.status(200).json(allUsers);
+   const allUsers = await User.find({}).populate("blogs");
+
+   res.status(200).json(
+      allUsers.map((user) => {
+         delete user.hashedPwd;
+         return user;
+      }),
+   );
 });
 
 userRouter.post("/", async (req, res, next) => {
@@ -20,7 +26,7 @@ userRouter.post("/", async (req, res, next) => {
       const newUser = new User({
          name: userInfo.name,
          username: userInfo.username,
-         hashedPwd,
+         password: hashedPwd,
       });
       await newUser.save();
       res.status(201).json(newUser);

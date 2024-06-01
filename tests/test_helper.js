@@ -2,20 +2,36 @@ const Blog = require("../models/Blog");
 const User = require("../models/User");
 const initialBlogs = [
    {
-      _id: "5a422a851b54a676234d17f7",
-      title: "React patterns",
-      author: "Michael Chan",
-      url: "https://reactpatterns.com/",
-      likes: 7,
-      __v: 0,
+      title: "this is second blog of user imran123",
+      author: "Imran Hussain",
+      url: "fakeurl.com",
+      likes: 5,
+      user: "665a026c518539a225569daa",
+      _id: "665a96642605986db4f2fa0e",
    },
    {
-      _id: "5a422aa71b54a676234d17f8",
-      title: "Go To Statement Considered Harmful",
-      author: "Edsger W. Dijkstra",
-      url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+      title: "this is third blog of user imran123",
+      author: "Imran Hussain",
+      url: "fakeurl.com",
       likes: 5,
-      __v: 0,
+      user: "665a026c518539a225569daa",
+      _id: "665a9c988134bf9ba3a3bf98",
+   },
+   {
+      title: "this is first blog of user fuzzi123",
+      author: "Fuzail Raza",
+      url: "fakeurl.com",
+      likes: 5,
+      user: "665a9a5dca90e52ac4ab1930",
+      _id: "665aa1b256922a19eb282aad",
+   },
+   {
+      title: "this is second blog of user fuzzi123",
+      author: "Fuzail Raza",
+      url: "fakeurl.com",
+      likes: 5,
+      user: "665a9a5dca90e52ac4ab1930",
+      _id: "665aa1bb56922a19eb282ab1",
    },
 ];
 
@@ -23,6 +39,7 @@ const uniqueBlogId = async () => {
    const blogData = {
       title: " fake title",
       author: "fake author",
+      user: initialUsers[0].id,
       url: "www.fakeurl.com",
       likes: 0,
    };
@@ -40,18 +57,18 @@ const blogsInDb = async () => {
 
 const initialUsers = [
    {
-      _id: "6658aa0404f5a0500223d624",
-      name: "Imran",
-      username: "immi13",
-      hashedPwd: "$2b$10$YMtL6yJlD/Ev0qfXK3Y1.uB8W..OPW2CSU.ygz55dP8z3IU4o3hj6",
-      __v: 0,
+      name: "Imran Hussain",
+      username: "immi123",
+      password: "fakepassword",
+      blogs: ["665a96642605986db4f2fa0e", "665a9c988134bf9ba3a3bf98"],
+      _id: "665a026c518539a225569daa",
    },
    {
-      _id: "6658aa37ad69a960b5dc55c3",
-      name: "Hussain",
-      username: "hussain123",
-      hashedPwd: "$2b$10$Ox9Eu2aRwFEK/Ek8vEGiee.o3fjLUDfU0TndsZ8Pof.bl1fbryT4G",
-      __v: 0,
+      name: "Fuzail Raza",
+      username: "fuzzi123",
+      password: "fakepassword",
+      blogs: ["665aa1b256922a19eb282aad", "665aa1bb56922a19eb282ab1"],
+      _id: "665a9a5dca90e52ac4ab1930",
    },
 ];
 

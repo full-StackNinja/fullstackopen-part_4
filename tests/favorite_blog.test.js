@@ -2,7 +2,7 @@ const { test, describe } = require("node:test");
 const assert = require("node:assert");
 const { favoriteBlog } = require("../utils/list_helper");
 
-describe.skip("favorite blog", () => {
+describe("favorite blog", () => {
    test("of empty blog list is null", () => {
       const blogs = [];
       const result = favoriteBlog(blogs);

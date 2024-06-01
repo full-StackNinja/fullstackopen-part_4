@@ -5,21 +5,36 @@ const mongoose = require("mongoose");
 const app = require("../app");
 const supertest = require("supertest");
 const Blog = require("../models/Blog");
+const User = require("../models/User");
 
 const api = supertest(app);
 
 describe("Blog List Tests", () => {
+   let user;
+   let token;
    beforeEach(async () => {
       await Blog.deleteMany({});
       for (let blog of testHelper.initialBlogs) {
          const newBLog = new Blog(blog);
          await newBLog.save();
       }
+
+      const loginInfo = await api.post("/api/login").send({
+         username: "immi123",
+         password: "fakepassword",
+      });
+      // console.log("🚀 ~ loginInfo ~ loginInfo:", loginInfo.body)
+      const username = loginInfo.body.username;
+      token = loginInfo.body.token;
+      // console.log("🚀 ~ beforeEach ~ token:", token)
+      user = await User.findOne({ username });
+      // console.log("🚀 ~ beforeEach ~ user:", user)
    });
    after(async () => {
       await mongoose.connection.close();
+      console.log("connection closed");
    });
-   describe.skip("GET /api/blogs", () => {
+   describe("GET /api/blogs", () => {
       test("gets blogs in json format", async () => {
          return api
             .get("/api/blogs")
@@ -46,16 +61,21 @@ describe("Blog List Tests", () => {
       });
    });
 
-   describe.skip("POST /api/blogs", () => {
+   describe("POST /api/blogs", () => {
       test("creates new blog", async () => {
+         // console.log("🚀 ~ test ~ user:", user);
+         // console.log('token', token)
          const newBlog = {
             title: "This is New Blog",
             author: "Imran Hussain",
+            user: user._id,
             url: "www.fakeurl.com",
             likes: 12,
          };
+
          await api
             .post("/api/blogs")
+            .set("Authorization", `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
             .expect(/This is New Blog/);
@@ -73,12 +93,20 @@ describe("Blog List Tests", () => {
          const newBlog = {
             title: "This is New Blog",
             author: "Imran Hussain",
+            user: user._id.toString(),
             url: "www.fakeurl.com",
             likes: 12,
             _id: uniqueId,
          };
 
-         const response = await api.post("/api/blogs").send(newBlog);
+         // console.log("🚀 ~ test ~ newBlog:", newBlog);
+
+         const response = await api
+            .post("/api/blogs")
+            .set("Authorization", `Bearer ${token}`)
+            .send(newBlog);
+         // console.log("🚀 ~ test ~ response.body:", response.body);
+
          delete newBlog._id;
 
          assert.deepStrictEqual(response.body, {
@@ -86,17 +114,39 @@ describe("Blog List Tests", () => {
             id: uniqueId,
          });
       });
+      test("does not create new blog if token is missing", async () => {
+         const newBlog = {
+            title: "This is New Blog",
+            author: "Imran Hussain",
+            user: user._id,
+            url: "www.fakeurl.com",
+            likes: 12,
+         };
 
+         await api
+            .post("/api/blogs")
+            .set("Authorization", "Bearer ")
+            .send(newBlog)
+            .expect(401);
+
+         const response = await api.get("/api/blogs");
+         assert.strictEqual(
+            response.body.length,
+            testHelper.initialBlogs.length,
+         );
+      });
       test("default value of likes property is 0", async () => {
          const uniqueId = await testHelper.uniqueBlogId();
          const newBlog = {
             title: "This is New Blog",
             author: "Imran Hussain",
+            user: user._id.toString(),
             url: "www.fakeurl.com",
             _id: uniqueId,
          };
          const response = await api
             .post("/api/blogs")
+            .set("Authorization", `Bearer ${token}`)
             .send(newBlog)
             .expect(201);
          assert.deepStrictEqual(response.body, {
@@ -104,6 +154,7 @@ describe("Blog List Tests", () => {
             author: newBlog.author,
             url: newBlog.url,
             id: newBlog._id,
+            user: newBlog.user,
             likes: 0,
          });
       });
@@ -112,12 +163,14 @@ describe("Blog List Tests", () => {
          const uniqueId = await testHelper.uniqueBlogId();
          const newBlog = {
             author: "Imran Hussain",
+            user: user._id.toString(),
             url: "www.fakeurl.com",
             _id: uniqueId,
          };
 
-         const response = await api
+         await api
             .post("/api/blogs")
+            .set("Authorization", `Bearer ${token}`)
             .send(newBlog)
             .expect(400)
             .expect(/title is required/);
@@ -126,11 +179,17 @@ describe("Blog List Tests", () => {
       });
    });
 
-   describe.skip("deleting a blog", () => {
+   describe("deleting a blog", () => {
       test("deletes blog successfully if it exist", async () => {
-         const blogList = (await api.get("/api/blogs")).body;
+         const blogList = testHelper.initialBlogs;
+         // console.log("🚀 ~ test ~ blogList:", blogList)
+
          const singleBlog = blogList[0];
-         await api.delete(`/api/blogs/${singleBlog.id}`).expect(204);
+         // console.log("🚀 ~ test ~ singleBlog:", singleBlog);
+         await api
+            .delete(`/api/blogs/${singleBlog._id}`)
+            .set("Authorization", `Bearer ${token}`)
+            .expect(200);
 
          const response = await api.get("/api/blogs");
          assert.strictEqual(
@@ -140,10 +199,13 @@ describe("Blog List Tests", () => {
       });
       test("fails with status 400 if id does not exist", async () => {
          const nonExistingId = await testHelper.uniqueBlogId();
-         await api.delete(`/api/blogs/${nonExistingId}`).expect(400);
+         await api
+            .delete(`/api/blogs/${nonExistingId}`)
+            .set("Authorization", `Bearer ${token}`)
+            .expect(400);
       });
    });
-   describe.skip("updating an existing blog", () => {
+   describe("updating an existing blog", () => {
       test("succeeds in updation if data is complete", async () => {
          const blogList = await testHelper.blogsInDb();
          const blogToUpdate = blogList[0];

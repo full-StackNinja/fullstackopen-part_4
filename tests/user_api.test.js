@@ -2,17 +2,21 @@ const testHelper = require("./test_helper");
 const User = require("../models/User");
 const { test, describe, beforeEach, after } = require("node:test");
 const assert = require("node:assert");
-
+const bcrypt = require("bcrypt");
 const app = require("../app");
 const Supertest = require("supertest");
 const mongoose = require("mongoose");
 const api = Supertest(app);
+
 describe("User tests", () => {
    beforeEach(async () => {
       await User.deleteMany({});
-      await Promise.all(
-         testHelper.initialUsers.map((user) => new User(user).save()),
-      );
+      for (const user of testHelper.initialUsers) {
+         const hashedPwd = await bcrypt.hash(user.password, 10);
+         const newUser = { ...user, password: hashedPwd };
+         const userObject = new User(newUser);
+         await userObject.save();
+      }
    });
    after(async () => {
       await mongoose.connection.close();
@@ -34,8 +38,8 @@ describe("User tests", () => {
    describe("POST /api/users", () => {
       test("creates user to the database correctly", async () => {
          const newUser = {
-            name: "Fuzzi",
-            username: "fuzzi123",
+            name: "Shabaan Raza",
+            username: "shabbi123",
             password: "fakepassword",
          };
          const response = await api
@@ -48,7 +52,7 @@ describe("User tests", () => {
                name: response.body.name,
                username: response.body.username,
             },
-            { name: "Fuzzi", username: "fuzzi123" },
+            { name: "Shabaan Raza", username: "shabbi123" },
          );
          const userData = await api.get("/api/users");
          assert.strictEqual(

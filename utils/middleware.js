@@ -1,4 +1,42 @@
+const config = require("../utils/config");
 const logger = require("./logger");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const tokenExtractor = async (req, res, next) => {
+   if (req.headers["authorization"]) {
+      const token = req.headers["authorization"].split(" ")[1];
+      if (!token)
+         return res
+            .status(401)
+            .json({ error: "token is not valid or missing" });
+      req.token = token;
+   }
+   next();
+};
+
+const userExtractor = async (req, res, next) => {
+   try {
+      if (req.headers["authorization"]) {
+         const decodeUser = await jwt.verify(req.token, config.SECRET);
+
+         const user = await User.findOne({ username: decodeUser.username });
+         req.user = user;
+         // console.log("🚀 ~ userExtractor ~ req.user:", req.user)
+      }
+      next();
+   } catch (error) {
+      next(error);
+   }
+};
+
+const verifyUser = async (req, res, next) => {
+   try {
+      const user = await jwt.verify(req.token, config.SECRET);
+      next();
+   } catch (error) {
+      next(error);
+   }
+};
 
 const requestLogger = (req, res, next) => {
    logger.info("Method:", req.method);
@@ -32,4 +70,7 @@ module.exports = {
    errorMiddleware,
    unknownEndpoint,
    requestLogger,
+   tokenExtractor,
+   userExtractor,
+   verifyUser,
 };
