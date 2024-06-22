@@ -5,10 +5,10 @@ const jwt = require("jsonwebtoken");
 const config = require("../utils/config");
 loginRouter.post("/", async (req, res) => {
    const { username, password } = req.body;
-   // console.log("🚀 ~ loginRouter.post ~ username:", username)
-   // console.log("🚀 ~ loginRouter.post ~ password:", password)
+   console.log("🚀 ~ loginRouter.post ~ username:", username)
+   console.log("🚀 ~ loginRouter.post ~ password:", password)
    const user = await User.findOne({ username })
-   // console.log("🚀 ~ loginRouter.post ~ user:", user)
+   console.log("🚀 ~ loginRouter.post ~ user:", user)
    
    const passwordCorrect =
       user === null ? false : await bcrypt.compare(password, user.password);

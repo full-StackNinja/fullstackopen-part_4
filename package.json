@@ -1,27 +1,28 @@
 {
-   "name": "fullstackopen-part_4",
-   "version": "1.0.0",
-   "description": "Repo for the exercises of part 4 of the fullstackopen course.",
-   "main": "index.js",
-   "scripts": {
-      "start": "clear && cross-env NODE_ENV=production node index.js",
-      "dev": "clear && cross-env NODE_ENV=development nodemon index.js",
-      "test": "clear && cross-env NODE_ENV=test node --test"
-   },
-   "keywords": [],
-   "author": "",
-   "license": "ISC",
-   "devDependencies": {
-      "dotenv": "^16.4.5",
-      "nodemon": "^3.1.0",
-      "supertest": "^7.0.0"
-   },
-   "dependencies": {
-      "bcrypt": "^5.1.1",
-      "cors": "^2.8.5",
-      "cross-env": "^7.0.3",
-      "express": "^4.19.2",
-      "jsonwebtoken": "^9.0.2",
-      "mongoose": "^8.4.0"
-   }
+  "name": "fullstackopen-part_4",
+  "version": "1.0.0",
+  "description": "Repo for the exercises of part 4 of the fullstackopen course.",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "test": "cross-env NODE_ENV=test node --test",
+    "test:start": "cross-env NODE_ENV=test nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.0.0"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.0"
+  }
 }

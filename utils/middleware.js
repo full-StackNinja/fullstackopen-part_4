@@ -10,6 +10,8 @@ const tokenExtractor = async (req, res, next) => {
             .status(401)
             .json({ error: "token is not valid or missing" });
       req.token = token;
+   } else {
+      console.log("header not provided");
    }
    next();
 };
@@ -18,10 +20,10 @@ const userExtractor = async (req, res, next) => {
    try {
       if (req.headers["authorization"]) {
          const decodeUser = await jwt.verify(req.token, config.SECRET);
-
          const user = await User.findOne({ username: decodeUser.username });
          req.user = user;
-         // console.log("🚀 ~ userExtractor ~ req.user:", req.user)
+      } else {
+         console.log("header not provided");
       }
       next();
    } catch (error) {
